@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bank Exam Quiz</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+}
+
+/* ========================= */
+/* TIMER AREA */
+/* ========================= */
+
+#timer-container{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:#f4f6f9;
+    padding-bottom:10px;
+}
+
+#timer{
+    background:#222;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.timer-buttons{
+    text-align:center;
+}
+
+#pauseBtn,
+#resumeBtn{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    margin:5px;
+}
+
+#pauseBtn{
+    background:#ff9800;
+    color:white;
+}
+
+#resumeBtn{
+    background:#28a745;
+    color:white;
+}
+
+.question{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.question h3{
+    margin-bottom:15px;
+}
+
+.option{
+    display:block;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.option:hover{
+    background:#f0f0f0;
+}
+
+.selected{
+    background:#cfe2ff;
+    border:2px solid #0d6efd;
+}
+
+.mark-btn{
+    margin-top:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#ff9800;
+    color:white;
+}
+
+.marked{
+    background:#ffcc80 !important;
+}
+
+.review-marked{
+    background:#e0e0e0 !important;
+    border:2px solid #9e9e9e;
+}
+
+.clear-btn{
+    margin-top:10px;
+    margin-left:10px;
+    padding:8px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#dc3545;
+    color:white;
+}
+
+.submit-btn{
+    width:100%;
+    padding:15px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    background:#28a745;
+    color:white;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+.result-box{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.review-btn{
+    padding:12px 20px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
+    background:#007bff;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.review-question{
+    background:white;
+    padding:20px;
+    margin:20px 0;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.correct{
+    color:green;
+    font-weight:bold;
+}
+
+.wrong{
+    color:red;
+    font-weight:bold;
+}
+
+.unanswered{
+    color:orange;
+    font-weight:bold;
+}
+
+.correct-answer{
+    background:#d4edda;
+    padding:10px;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+.disabled-option{
+    pointer-events:none;
+    opacity:0.6;
+}
+
+.disabled-btn{
+    opacity:0.6;
+    cursor:not-allowed;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Bank Exam MCQ Quiz</h1>
+
+<!-- ========================= -->
+<!-- TIMER -->
+<!-- ========================= -->
+
+<div id="timer-container">
+
+    <div id="timer">
+        Time Left: 20:00
+    </div>
+
+    <div class="timer-buttons">
+
+        <button id="pauseBtn" onclick="pauseTimer()">
+            Pause
+        </button>
+
+        <button id="resumeBtn" onclick="resumeTimer()" disabled>
+            Resume
+        </button>
+
+    </div>
+
+</div>
+
+<div id="quiz"></div>
+
+<button class="submit-btn" onclick="submitQuiz()">
+Submit Quiz
+</button>
+
+</div>
+
+<script>
+
+// ===============================
+// QUESTIONS AREA
+// ===============================
+
+const questions = [
+
+{q:"The Central Ayurveda Research Institute (CARI), Bengaluru, functioning under the Central Council for Research in Ayurvedic Sciences (CCRAS), recently achieved a significant milestone by becoming the first CCRAS institute to receive ISO 15189:2022 accreditation. This accreditation was granted specifically for excellence in which two laboratory disciplines?", options:["Microbiology and Immunology","Biochemistry and Haematology","Pathology and Cytology","Molecular Biology and Genetics"], answer:1},
+
+{q:"The ISO 15189:2022 accreditation, recently awarded to Central Ayurveda Research Institute (CARI), Bengaluru, is primarily recognized as the latest international standard applicable to:", options:["Pharmaceutical manufacturing facilities","Medical laboratories focusing on quality and technical competence","Hospital infrastructure management systems","Biomedical equipment calibration centres"], answer:1},
+
+{q:"The Central Ayurveda Research Institute (CARI) became the first institute under CCRAS to obtain ISO 15189:2022 accreditation. In which city is this institute located?", options:["Mysuru","Bengaluru","Hyderabad","Chennai"], answer:1},
+
+{q:"The ISO 15189:2022 standard, recently achieved by CARI Bengaluru, emphasizes internationally accepted benchmarks for which of the following aspects of diagnostic services?", options:["Profitability and operational expansion","Accuracy, reliability and safety","Research funding and innovation output","Patient insurance management"], answer:1},
+
+{q:"The organization under which Central Ayurveda Research Institute (CARI) functions is the Central Council for Research in Ayurvedic Sciences (CCRAS). What is the primary mandate of CCRAS?", options:["Regulation of AYUSH educational institutions","Research in Ayurvedic sciences","Licensing of Ayurvedic medicines","Promotion of traditional food systems"], answer:1},
+
+{q:"The Central Council for Research in Ayurvedic Sciences (CCRAS), under which CARI Bengaluru operates, was established in which year?", options:["1972","1975","1978","1982"], answer:2},
+
+{q:"The acronym CCRAS, frequently seen in recent healthcare and research-related developments, stands for:", options:["Central Commission for Research and Applied Sciences","Central Council for Research in Ayurvedic Sciences","Council for Clinical Research and Ayurvedic Studies","Centre for Research in Alternative Systems"], answer:1},
+
+{q:"The Bangalore Water Supply and Sewerage Board (BWSSB) became the first Indian water utility to receive ISO 50001:2018 certification. This certification is associated with which management framework?", options:["Water Quality Management Systems","Environmental Management Systems","Energy Management Systems","Occupational Safety Management Systems"], answer:2},
+
+{q:"The ISO 50001:2018 certification awarded to BWSSB was granted by which internationally recognized certification body?", options:["SGS India","Bureau Veritas","TÜV Rheinland","DNV Assurance"], answer:1},
+
+{q:"The Bangalore Water Supply and Sewerage Board (BWSSB) earned recognition under ISO 50001:2018 for efficient energy management at pumping stations located in TK Halli, Harohalli and:", options:["Mandya","Ramanagara","Tataguni","Channapatna"], answer:2},
+
+{q:"Apart from pumping stations, the ISO 50001:2018 certification received by BWSSB also covers operations at which headquarters complex?", options:["Vidhana Soudha","Cauvery Bhavan","Karnataka Bhavan","Jal Shakti Bhavan"], answer:1},
+
+{q:"The Bangalore Water Supply and Sewerage Board (BWSSB) recently became India's first water utility to receive ISO 50001:2018 certification. BWSSB is headquartered in which city?", options:["Mysuru","Hubballi","Bengaluru","Mangaluru"], answer:2},
+
+{q:"In 2025, BWSSB achieved another notable distinction by becoming the first water board in India to receive BIS certification for which system?", options:["Urban wastewater recycling system","Smart metering system","Piped drinking water supply management system","Groundwater recharge management system"], answer:2},
+
+{q:"The Bangalore Water Supply and Sewerage Board (BWSSB) was established in which year?", options:["1956","1960","1964","1968"], answer:2},
+
+{q:"The Bureau of Indian Standards (BIS) recently notified specifications for E22, E25, E27 and E30 fuel blends. These standards were issued under which specification code?", options:["IS 17890:2024","IS 19850:2026","IS 15189:2022","IS 50001:2018"], answer:1},
+
+{q:"The Bureau of Indian Standards (BIS) notified revised specifications permitting petrol to be blended with ethanol up to what maximum percentage under the newly notified fuel standards?", options:["22%","25%","27%","30%"], answer:3},
+
+{q:"The newly notified fuel standards by BIS include E22, E25, E27 and E30 variants. The designation E27 refers to petrol blended with ethanol up to:", options:["22%","25%","27%","30%"], answer:2},
+
+{q:"The specifications for E22–E30 fuel blends were notified by the Bureau of Indian Standards (BIS) under the administrative framework of which ministry?", options:["Ministry of Petroleum and Natural Gas (MoPNG)","Ministry of Road Transport and Highways (MoRTH)","Ministry of Consumer Affairs, Food and Public Distribution (MoCAF&PD)","Ministry of Heavy Industries (MHI)"], answer:2},
+
+{q:"Which of the following statements correctly describes the rollout approach adopted for the newly notified E30 fuel standard by the Bureau of Indian Standards (BIS)?", options:["Immediate nationwide mandatory implementation was announced.","Rollout was restricted only to metropolitan cities.","The notification did not mandate immediate nationwide rollout of E30 fuel.","E30 fuel was approved only for export purposes."], answer:2},
+
+{q:"The Bureau of Indian Standards (BIS), which notified the latest ethanol-blended fuel specifications, was established in which year and is headquartered in which city?", options:["1986 – New Delhi","1978 – Mumbai","1964 – Bengaluru","1956 – Kolkata"], answer:0},
+];
+
+// ===============================
+// VARIABLES
+// ===============================
+
+let userAnswers = new Array(questions.length).fill(null);
+
+let markedForReview = new Array(questions.length).fill(false);
+
+let submitted = false;
+
+// ===============================
+// LOAD QUIZ
+// ===============================
+
+function loadQuiz(){
+
+    const quizDiv = document.getElementById("quiz");
+
+    questions.forEach((question,index)=>{
+
+        const qDiv = document.createElement("div");
+
+        qDiv.classList.add("question");
+
+        qDiv.id = `question_${index}`;
+
+        qDiv.innerHTML = `
+        <h3>Q${index+1}. ${question.q}</h3>
+        `;
+
+        question.options.forEach((option,optIndex)=>{
+
+            const opt = document.createElement("div");
+
+            opt.classList.add("option");
+
+            opt.innerText = option;
+
+            opt.onclick = ()=>selectOption(index,optIndex,opt);
+
+            opt.id = `q${index}_opt${optIndex}`;
+
+            qDiv.appendChild(opt);
+
+        });
+
+        // MARK BUTTON
+
+        const markBtn = document.createElement("button");
+
+        markBtn.innerText = "Mark For Review";
+
+        markBtn.classList.add("mark-btn");
+
+        markBtn.onclick = ()=>toggleMark(index,markBtn);
+
+        qDiv.appendChild(markBtn);
+
+        // CLEAR BUTTON
+
+        const clearBtn = document.createElement("button");
+
+        clearBtn.innerText = "Clear";
+
+        clearBtn.classList.add("clear-btn");
+
+        clearBtn.onclick = ()=>clearAnswer(index);
+
+        qDiv.appendChild(clearBtn);
+
+        quizDiv.appendChild(qDiv);
+
+    });
+
+}
+
+// ===============================
+// SELECT OPTION
+// ===============================
+
+function selectOption(qIndex,optIndex,element){
+
+    if(submitted) return;
+
+    userAnswers[qIndex] = optIndex;
+
+    const options = document.querySelectorAll(`[id^="q${qIndex}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+    element.classList.add("selected");
+
+}
+
+// ===============================
+// MARK FOR REVIEW
+// ===============================
+
+function toggleMark(index,button){
+
+    markedForReview[index] = !markedForReview[index];
+
+    const questionBox = document.getElementById(`question_${index}`);
+
+    if(markedForReview[index]){
+
+        button.classList.add("marked");
+
+        button.innerText = "Marked For Review";
+
+        questionBox.classList.add("review-marked");
+
+    }else{
+
+        button.classList.remove("marked");
+
+        button.innerText = "Mark For Review";
+
+        questionBox.classList.remove("review-marked");
+
+    }
+
+}
+
+// ===============================
+// CLEAR ANSWER
+// ===============================
+
+function clearAnswer(index){
+
+    if(submitted) return;
+
+    userAnswers[index] = null;
+
+    const options = document.querySelectorAll(`[id^="q${index}_opt"]`);
+
+    options.forEach(opt=>{
+        opt.classList.remove("selected");
+    });
+
+}
+
+// ===============================
+// SUBMIT QUIZ
+// ===============================
+
+function submitQuiz(){
+
+    if(submitted) return;
+
+    submitted = true;
+
+    clearInterval(timer);
+
+    let score = 0;
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let unansweredCount = 0;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        if(userAns === null){
+
+            unansweredCount++;
+
+        }
+        else if(userAns === question.answer){
+
+            score += 1;
+            correctCount++;
+
+        }
+        else{
+
+            score -= 0.25;
+            wrongCount++;
+
+        }
+
+    });
+
+    let attempted = correctCount + wrongCount;
+
+    let accuracy = attempted > 0
+    ? ((correctCount/attempted)*100).toFixed(2)
+    : 0;
+
+    document.body.innerHTML = `
+
+    <div class="container">
+
+        <div class="result-box">
+
+            <h1>Quiz Submitted ✅</h1>
+
+            <h2>Total Score: ${score.toFixed(2)}</h2>
+
+            <h3>Correct Answers: ${correctCount}</h3>
+
+            <h3>Wrong Answers: ${wrongCount}</h3>
+
+            <h3>Unanswered Questions: ${unansweredCount}</h3>
+
+            <h3>Accuracy: ${accuracy}%</h3>
+
+            <button class="review-btn" onclick="reviewAnswers()">
+            Review Answers
+            </button>
+
+            <div id="reviewSection"></div>
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+// ===============================
+// REVIEW ANSWERS
+// ===============================
+
+function reviewAnswers(){
+
+    const reviewSection = document.getElementById("reviewSection");
+
+    let html = `<h1 style="margin-top:40px;">Review Section</h1>`;
+
+    questions.forEach((question,index)=>{
+
+        const userAns = userAnswers[index];
+
+        let status = "";
+        let marks = "";
+
+        if(userAns === null){
+
+            status = `<span class="unanswered">Unanswered</span>`;
+            marks = `0 Marks`;
+
+        }
+        else if(userAns === question.answer){
+
+            status = `<span class="correct">Correct ✅</span>`;
+            marks = `+1 Mark`;
+
+        }
+        else{
+
+            status = `<span class="wrong">Wrong ❌</span>`;
+            marks = `-0.25 Mark`;
+
+        }
+
+        html += `
+
+        <div class="review-question">
+
+            <h3>Q${index+1}. ${question.q}</h3>
+
+            <p>${status}</p>
+
+            <p><b>Marks:</b> ${marks}</p>
+
+            <p>
+            <b>Your Answer:</b>
+            ${
+                userAns === null
+                ? "Not Attempted"
+                : question.options[userAns]
+            }
+            </p>
+
+            <div class="correct-answer">
+            <b>Correct Answer:</b>
+            ${question.options[question.answer]}
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    reviewSection.innerHTML = html;
+
+}
+
+// ===============================
+// TIMER
+// ===============================
+
+let time = 1200;
+
+let timer;
+
+let isPaused = false;
+
+function startTimer(){
+
+    timer = setInterval(()=>{
+
+        if(!isPaused){
+
+            let minutes = Math.floor(time/60);
+
+            let seconds = time%60;
+
+            document.getElementById("timer").innerText =
+            `Time Left: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+
+            time--;
+
+            if(time < 0){
+
+                clearInterval(timer);
+
+                alert("Time is up! Quiz auto-submitted.");
+
+                submitQuiz();
+
+            }
+
+        }
+
+    },1000);
+
+}
+
+// ===============================
+// PAUSE TIMER
+// ===============================
+
+function pauseTimer(){
+
+    if(submitted) return;
+
+    isPaused = true;
+
+    document.getElementById("pauseBtn").disabled = true;
+
+    document.getElementById("resumeBtn").disabled = false;
+
+    // Disable options
+    document.querySelectorAll(".option").forEach(opt=>{
+        opt.classList.add("disabled-option");
+    });
+
+    // Disable buttons
+    document.querySelectorAll(".mark-btn, .clear-btn").forEach(btn=>{
+        btn.disabled = true;
+        btn.classList.add("disabled-btn");
+    });
+
+}
+// ===============================
+// RESUME TIMER
+// ===============================
+
+function resumeTimer(){
+
+    if(submitted) return;
+
+    isPaused = false;
+
+    document.getElementById("pauseBtn").disabled = false;
+
+    document.getElementById("resumeBtn").disabled = true;
+
+    // Enable options
+    document.querySelectorAll(".option").forEach(opt=>{
+        opt.classList.remove("disabled-option");
+    });
+
+    // Enable buttons
+    document.querySelectorAll(".mark-btn, .clear-btn").forEach(btn=>{
+        btn.disabled = false;
+        btn.classList.remove("disabled-btn");
+    });
+
+}
+// ===============================
+
+loadQuiz();
+
+startTimer();
+
+</script>
+
+</body>
+</html>
